@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sheartwin"
+description = "Generate sheared unit cell"
+version = "0.1.0"
+requires-python = ">=3.7"
+authors = [
+    { name = "Atsushi Togo", email = "atz.togo@gmail.com" }
+]
+dependencies = [
+    "phonopy",
+    "click"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project.entry-points."console_scripts"]
+sheartwin = "sheartwin.cli:cmd_root"
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203,W503"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
