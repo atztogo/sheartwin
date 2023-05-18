@@ -28,15 +28,20 @@ class ShearTwin:
         """Init method."""
         self._Q = Q
         self._T = T
-        self._unitcell = None
-        if unitcell is not None:
-            self._set_cell(unitcell)
+        self._unitcell = unitcell
         if cell_yaml_filename is not None:
             self._set_cell_from_yaml(cell_yaml_filename)
 
     def run(self, t: float) -> PhonopyAtoms:
         """Return deformed unit cell."""
-        cell: PhonopyAtoms = self._unitcell.copy()
+        if self._unitcell is None:
+            raise RuntimeError("unitcell is not set.")
+        if self._Q is None:
+            raise RuntimeError("Q is not set.")
+        if self._T is None:
+            raise RuntimeError("T is not set.")
+
+        cell = self._unitcell.copy()
         cell.cell = np.dot(cell.cell.T, self._get_QTQinv(t)).T
         return cell
 
@@ -50,7 +55,7 @@ class ShearTwin:
         self._Q = matrix
 
     @property
-    def T(self) -> Callable:
+    def T(self) -> Optional[Callable]:
         """Setter and gettter of T matrix function."""
         return self._T
 
@@ -58,15 +63,16 @@ class ShearTwin:
     def T(self, matrix_function: Callable):
         self._T = matrix_function
 
+    @property
+    def unitcell(self) -> Optional[PhonopyAtoms]:
+        """Return unit cell."""
+        return self._unitcell
+
     def _set_cell_from_yaml(
         self, cell_yaml_filename: Union[str, bytes, os.PathLike]
     ) -> phonopy.Phonopy:
         """Set unit cell from cell yaml file."""
-        self._set_cell(read_cell_yaml(cell_yaml_filename))
-
-    def _set_cell(self, unitcell: PhonopyAtoms):
-        """Set unit cell."""
-        self._unitcell = unitcell
+        self._unitcell = read_cell_yaml(cell_yaml_filename)
 
     def _get_QTQinv(self, t: float) -> np.ndarray:
         Q = self._Q

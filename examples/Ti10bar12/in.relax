@@ -1,0 +1,15 @@
+units metal
+
+read_data unitcell
+
+pair_style  polymlp
+pair_coeff * * ../mlp.lammps dummy
+
+variable etol equal 0.0
+variable ftol equal 1e-8
+variable maxiter equal 1000
+variable maxeval equal 100000
+
+minimize ${etol} ${ftol} ${maxiter} ${maxeval}
+
+write_data relaxed_unitcell
